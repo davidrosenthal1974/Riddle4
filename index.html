@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>משחק 4: יוצא דופן</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f0fdf4;
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .card {
+    background: white;
+    padding: 30px 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12);
+    max-width: 440px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  h1 {
+    color: #047857;
+    font-size: 1.6rem;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 1.05rem;
+    color: #475569;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .words-list {
+    background: #ecfdf5;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 22px;
+    line-height: 1.8;
+    border: 1px solid #a7f3d0;
+  }
+  .instructions {
+    font-size: 0.98rem;
+    color: #334155;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  textarea {
+    width: 95%;
+    height: 90px;
+    padding: 12px;
+    font-size: 1.05rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    text-align: right;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: none;
+    transition: 0.2s;
+  }
+  textarea:focus {
+    border-color: #059669;
+  }
+  .btn-submit {
+    background: #059669;
+    color: white;
+    border: none;
+    padding: 13px 32px;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 95%;
+    transition: 0.2s;
+    touch-action: manipulation;
+  }
+  .btn-submit:active {
+    background: #047857;
+    transform: scale(0.98);
+  }
+  .feedback {
+    margin-top: 14px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    min-height: 24px;
+    color: #dc2626;
+    line-height: 1.4;
+  }
+  .hidden { display: none !important; }
+  .win { animation: fadeIn 0.7s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>משחק 4: יוצא דופן 🔍</h1>
+  <div class="subtitle">מי כאן לא שייכת לרשימה, ולמה?</div>
+
+  <div id="game-section">
+    <div class="words-list">
+      דוד &nbsp;•&nbsp; מקלט &nbsp;•&nbsp; מצלמה &nbsp;•&nbsp; בירה &nbsp;•&nbsp; תחתית
+    </div>
+
+    <div class="instructions">
+      כתבי איזו מילה היא יוצאת הדופן מבין החמש, והסבירי מדוע בחרת בה:
+    </div>
+
+    <textarea id="answerInput" placeholder="הקלידי כאן את המילה ואת ההסבר המלא..."></textarea>
+    <br>
+    <button type="button" class="btn-submit" id="submitBtn">שלחי תשובה</button>
+    <div id="feedback" class="feedback-msg feedback"></div>
+  </div>
+
+  <div id="win-section" class="hidden win">
+    <div style="font-size: 3.5rem; margin: 10px 0;">🏙️ 👑 🎁</div>
+    <h2 style="color: #047857; font-size: 1.8rem; margin: 10px 0;">גאונה! פיצחת! 🎉</h2>
+    <p style="font-size: 1.15rem; line-height: 1.7; color: #334155;">
+      מדויק לחלוטין!<br>
+      <strong>מצלמה</strong> היא יוצאת הדופן, כי לכל היתר מתחברת המילה <strong>עיר</strong>:<br>
+      עיר דוד • עיר מקלט • עיר בירה • עיר תחתית.<br><br>
+      המוח שלך עובד כמו שעון שוויצרי! 🧠<br><br>
+      גשי מיד ל<strong>דודאווי</strong> ודרשי לקבל את המתנה הרביעית שלך!
+    </p>
+  </div>
+</div>
+
+<script>
+  function checkAnswer() {
+    var input = document.getElementById('answerInput');
+    var rawText = input.value.trim().toLowerCase();
+    var fb = document.getElementById('feedback');
+
+    if (!rawText) {
+      fb.textContent = "קודם תקלידי תשובה והסבר!";
+      return;
+    }
+
+    var cleanText = rawText.replace(/[\"\'\.\,\-]/g, '');
+
+    var hasCamera = cleanText.indexOf("מצלמה") !== -1;
+    var hasCity = cleanText.indexOf("עיר") !== -1 || cleanText.indexOf("ערים") !== -1;
+
+    if (hasCamera && hasCity) {
+      fb.textContent = "";
+      document.getElementById('game-section').classList.add('hidden');
+      document.getElementById('win-section').classList.remove('hidden');
+    } else if (hasCamera && !hasCity) {
+      fb.textContent = "המילה מצלמה נכונה, אבל ההסבר עדיין לא מדויק... למה דווקא היא?";
+    } else if (!hasCamera && hasCity) {
+      fb.textContent = "ההסבר מעניין, אבל מה המילה שיוצאת דופן?";
+    } else {
+      fb.textContent = "לא נכון. קראי את המילים היטב, הסבירי מה יוצא דופן ומדוע!";
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+</script>
+</body>
+</html>
